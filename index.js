@@ -2,12 +2,21 @@
 import chokidar from 'chokidar';
 import debounce from 'lodash.debounce';
 import program from 'caporal';
+import fs from 'fs';
 
 
 program
     .version('0.0.1')
     .argument('[filename]', 'Name of a file to execute')
-    .action((args) => {
+    .action( async ({ filename }) => {
+        const name = filename || 'index.js';
+try {
+    await fs.promises.access(name);
+} catch(err) {
+    throw new Error(`Could not find file ${name}`);
+}
+
+
         const start = debounce(() => {
             console.log('Starting user program');
         }, 100);
