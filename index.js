@@ -3,6 +3,7 @@ import chokidar from 'chokidar';
 import debounce from 'lodash.debounce';
 import program from 'caporal';
 import fs from 'fs';
+import { spawn } from 'child_process';
 
 
 program
@@ -15,10 +16,8 @@ try {
 } catch(err) {
     throw new Error(`Could not find file ${name}`);
 }
-
-
         const start = debounce(() => {
-            console.log('Starting user program');
+            spawn('node', [name], { stdio: 'inherit'});
         }, 100);
 
         chokidar.watch('.')
