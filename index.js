@@ -3,21 +3,26 @@ import chokidar from 'chokidar';
 import debounce from 'lodash.debounce';
 import program from 'caporal';
 import fs from 'fs';
-import { spawn } from 'child_process';
-
+import {spawn} from 'child_process';
+import chalk from 'chalk';
 
 program
     .version('0.0.1')
     .argument('[filename]', 'Name of a file to execute')
-    .action( async ({ filename }) => {
+    .action(async ({filename}) => {
         const name = filename || 'index.js';
-try {
-    await fs.promises.access(name);
-} catch(err) {
-    throw new Error(`Could not find file ${name}`);
-}
+        try {
+            await fs.promises.access(name);
+        } catch (err) {
+            throw new Error(`Could not find file ${name}`);
+        }
+        let proc;
         const start = debounce(() => {
-            spawn('node', [name], { stdio: 'inherit'});
+            if (proc) {
+                proc.kill();
+            }
+            console.log(chalk.blue('>>>> Starting process...'));
+            proc = spawn('node', [name], {stdio: 'inherit'});
         }, 100);
 
         chokidar.watch('.')
